@@ -1,0 +1,231 @@
+
+<style>
+.wa-btn {
+  display: block;
+  width: 100%;
+  background: #fff;
+  border: none;
+  border-top: 1px solid #e9e9e9;
+  color: #00a5f4;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: 400;
+}
+.wa-btn:first-child { border-radius: 0 0 0 0; }
+.wa-btn:last-child { border-radius: 0 0 10px 10px; }
+.wa-btn:only-child { border-radius: 0 0 10px 10px; }
+.wa-btn:hover { background: #f5f5f5; }
+.wa-btn-group { border-radius: 0 0 10px 10px; overflow: hidden; background:#fff; border: 0.5px solid #e0e0e0; margin-top: 1px; }
+.bubble { background:#fff; border-radius:0 10px 10px 10px; padding:10px 12px 6px 12px; font-size:13.5px; color:#111; line-height:1.55; border: 0.5px solid #e8e8e8; }
+.bubble-wrap { display:flex; flex-direction:column; max-width:88%; }
+.user-bubble { background:#dcf8c6; border-radius:10px 0 10px 10px; padding:9px 12px 6px 12px; font-size:13.5px; color:#111; line-height:1.5; align-self:flex-end; max-width:80%; border: 0.5px solid #c8edb0; }
+.ts { text-align:right; font-size:10px; color:#aaa; margin-top:3px; }
+.chat-row { display:flex; flex-direction:column; gap:2px; }
+</style>
+
+<div style="display:flex; justify-content:center; padding:1.5rem 0; background:var(--color-background-secondary); border-radius:var(--border-radius-lg);">
+  <div style="width:345px; background:#e5ddd5; border-radius:18px; overflow:hidden; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+
+    <!-- Header -->
+    <div style="background:#075e54; padding:11px 14px; display:flex; align-items:center; gap:10px;">
+      <div style="width:38px;height:38px;border-radius:50%;background:#d32027;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span style="font-size:12px;font-weight:700;color:#fff;">AD</span>
+      </div>
+      <div>
+        <p style="margin:0;font-size:15px;font-weight:500;color:#fff;">Avery Dennison Graphics</p>
+        <p style="margin:0;font-size:11px;color:#9de1d8;">Online</p>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:16px;">
+        <svg width="18" height="18" fill="#fff" viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.45 11.45 0 003.58.57 1 1 0 011 1V21a1 1 0 01-1 1A17 17 0 013 5a1 1 0 011-1h3.5a1 1 0 011 1 11.45 11.45 0 00.57 3.58 1 1 0 01-.25 1.02l-2.2 2.19z"/></svg>
+        <svg width="18" height="18" fill="#fff" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+      </div>
+    </div>
+
+    <!-- Chat body -->
+    <div style="padding:12px 10px;display:flex;flex-direction:column;gap:10px;background:#e5ddd5;" id="chat">
+
+      <div style="text-align:center;">
+        <span style="background:rgba(255,255,255,0.65);font-size:11px;color:#555;padding:3px 10px;border-radius:8px;">Today</span>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="chat-row" id="step1">
+        <div class="bubble-wrap">
+          <div class="bubble" style="border-radius:0 10px 0 0;">
+            Hi [First Name]! 👋<br><br>
+            We've received your enquiry at Avery Dennison Graphics Solutions and we're glad you reached out.<br><br>
+            To make sure we connect you with the right person, we'd love to ask you a few quick questions. It'll only take a minute! Ready? Reply YES to get started.
+            <div class="ts">9:41 AM</div>
+          </div>
+          <div class="wa-btn-group">
+            <button class="wa-btn" onclick="replyYes()">YES</button>
+            <button class="wa-btn" style="border-top:1px solid #e9e9e9;" onclick="replyNo()">NO</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- No path -->
+      <div class="chat-row" id="step-no" style="display:none;">
+        <div class="user-bubble">NO<div class="ts">9:42 AM ✓✓</div></div>
+        <div class="bubble-wrap" style="margin-top:6px;">
+          <div class="bubble" style="border-radius:0 10px 10px 10px;">
+            No worries [First Name]!<br><br>
+            Whenever you're ready, our team is always here to help. Feel free to reach out anytime or explore our range at<br>
+            <a href="https://graphics.averydennison.com/ap-en/home.html" style="color:#128c7e;">graphics.averydennison.com</a><br><br>
+            Have a great day! 👋
+            <div class="ts">9:42 AM</div>
+          </div>
+        </div>
+        <button onclick="resetChat()" style="align-self:center;margin-top:8px;background:transparent;border:1px solid #aaa;color:#555;font-size:12px;padding:5px 16px;border-radius:20px;cursor:pointer;">↩ Start over</button>
+      </div>
+
+      <!-- Step 2: Intent -->
+      <div class="chat-row" id="step2" style="display:none;">
+        <div class="user-bubble">YES<div class="ts">9:42 AM ✓✓</div></div>
+        <div class="bubble-wrap" style="margin-top:6px;">
+          <div class="bubble" style="border-radius:0 10px 0 0;">
+            What best describes what you're looking for?
+            <div class="ts">9:42 AM</div>
+          </div>
+          <div class="wa-btn-group">
+            <button class="wa-btn" onclick="pickIntent(1)">I want to become a certified partner / co-branded studio</button>
+            <button class="wa-btn" style="border-top:1px solid #e9e9e9;" onclick="pickIntent(2)">I'm looking to source films, wraps, or graphics materials</button>
+            <button class="wa-btn" style="border-top:1px solid #e9e9e9;" onclick="pickIntent(3)">Both — partnering and sourcing</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3a: Partner timeline -->
+      <div class="chat-row" id="step3-partner" style="display:none;">
+        <div class="user-bubble" id="intent-user-msg">Certified partner<div class="ts">9:43 AM ✓✓</div></div>
+        <div class="bubble-wrap" style="margin-top:6px;">
+          <div class="bubble" style="border-radius:0 10px 0 0;">
+            Great to hear! When are you looking to get started with the partnership?
+            <div class="ts">9:43 AM</div>
+          </div>
+          <div class="wa-btn-group">
+            <button class="wa-btn" onclick="pickTimeline('As soon as possible')">As soon as possible</button>
+            <button class="wa-btn" style="border-top:1px solid #e9e9e9;" onclick="pickTimeline('In the next 1 to 3 months')">In the next 1 to 3 months</button>
+            <button class="wa-btn" style="border-top:1px solid #e9e9e9;" onclick="pickTimeline('Just exploring for now')">Just exploring for now</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3b: Volume -->
+      <div class="chat-row" id="step3-source" style="display:none;">
+        <div class="user-bubble" id="intent-user-msg2">Source materials<div class="ts">9:43 AM ✓✓</div></div>
+        <div class="bubble-wrap" style="margin-top:6px;">
+          <div class="bubble" style="border-radius:0 10px 0 0;">
+            What is your approximate monthly requirement?
+            <div class="ts">9:43 AM</div>
+          </div>
+          <div class="wa-btn-group">
+            <button class="wa-btn" onclick="pickVolume('Small (below 500 sq ft / under 5 vehicles/month)')">Small — below 500 sq ft / under 5 vehicles/month</button>
+            <button class="wa-btn" style="border-top:1px solid #e9e9e9;" onclick="pickVolume('Medium (500–2000 sq ft / 5–20 vehicles/month)')">Medium — 500–2000 sq ft / 5–20 vehicles/month</button>
+            <button class="wa-btn" style="border-top:1px solid #e9e9e9;" onclick="pickVolume('Large (above 2000 sq ft / 20+ vehicles/month)')">Large — above 2000 sq ft / 20+ vehicles/month</button>
+            <button class="wa-btn" style="border-top:1px solid #e9e9e9;" onclick="pickVolume('One-time project / Not sure yet')">One-time project / Not sure yet</button>
+            <button class="wa-btn" style="border-top:1px solid #e9e9e9;" onclick="pickVolume('Other')">Other (please tell us more)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Purchase timeline -->
+      <div class="chat-row" id="step4-source" style="display:none;">
+        <div class="user-bubble" id="volume-user-msg">Large<div class="ts">9:44 AM ✓✓</div></div>
+        <div class="bubble-wrap" style="margin-top:6px;">
+          <div class="bubble" style="border-radius:0 10px 0 0;">
+            When are you looking to make a purchase or start the project?
+            <div class="ts">9:44 AM</div>
+          </div>
+          <div class="wa-btn-group">
+            <button class="wa-btn" onclick="pickPurchase('Immediately / Within 1 month')">Immediately / Within 1 month</button>
+            <button class="wa-btn" style="border-top:1px solid #e9e9e9;" onclick="pickPurchase('In the next 1–3 months')">In the next 1–3 months</button>
+            <button class="wa-btn" style="border-top:1px solid #e9e9e9;" onclick="pickPurchase('In the next 3–6 months')">In the next 3–6 months</button>
+            <button class="wa-btn" style="border-top:1px solid #e9e9e9;" onclick="pickPurchase('Just exploring for now')">Just exploring for now</button>
+            <button class="wa-btn" style="border-top:1px solid #e9e9e9;" onclick="pickPurchase('Other')">Other (please tell us more)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Final thank you -->
+      <div class="chat-row" id="step-final" style="display:none;">
+        <div class="user-bubble" id="final-user-msg">ASAP<div class="ts">9:45 AM ✓✓</div></div>
+        <div class="bubble-wrap" style="margin-top:6px;">
+          <div class="bubble" style="border-radius:0 10px 10px 10px;">
+            Thank you [First Name]! 🙌<br><br>
+            Our partnerships team will get in touch with you within 24 hours to walk you through the Avery Dennison certified partner programme.<br><br>
+            Looking forward to connecting!
+            <div class="ts">9:45 AM</div>
+          </div>
+        </div>
+        <button onclick="resetChat()" style="align-self:center;margin-top:8px;background:transparent;border:1px solid #aaa;color:#555;font-size:12px;padding:5px 16px;border-radius:20px;cursor:pointer;">↩ Start over</button>
+      </div>
+
+    </div>
+
+    <!-- Input bar -->
+    <div style="background:#f0f0f0;padding:8px 10px;display:flex;align-items:center;gap:8px;">
+      <div style="flex:1;background:#fff;border-radius:22px;padding:8px 14px;font-size:13px;color:#aaa;">Type a message</div>
+      <div style="width:36px;height:36px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function show(id) {
+  var el = document.getElementById(id);
+  el.style.display = 'flex';
+  el.style.flexDirection = 'column';
+  setTimeout(function(){ el.scrollIntoView({behavior:'smooth',block:'end'}); }, 120);
+}
+function hideButtons(stepId) {
+  var btns = document.querySelectorAll('#' + stepId + ' .wa-btn-group');
+  btns.forEach(function(g){ g.style.display='none'; });
+}
+function replyYes() {
+  hideButtons('step1');
+  show('step2');
+}
+function replyNo() {
+  hideButtons('step1');
+  show('step-no');
+}
+function pickIntent(n) {
+  hideButtons('step2');
+  var labels = ['Certified partner / co-branded studio', 'Source films, wraps & graphics materials', 'Both — partnering and sourcing'];
+  if (n === 1 || n === 3) {
+    document.getElementById('intent-user-msg').innerHTML = labels[n-1] + '<div class="ts">9:43 AM ✓✓</div>';
+    show('step3-partner');
+  } else {
+    document.getElementById('intent-user-msg2').innerHTML = labels[n-1] + '<div class="ts">9:43 AM ✓✓</div>';
+    show('step3-source');
+  }
+}
+function pickTimeline(t) {
+  hideButtons('step3-partner');
+  document.getElementById('final-user-msg').innerHTML = t + '<div class="ts">9:45 AM ✓✓</div>';
+  show('step-final');
+}
+function pickVolume(v) {
+  hideButtons('step3-source');
+  document.getElementById('volume-user-msg').innerHTML = v + '<div class="ts">9:44 AM ✓✓</div>';
+  show('step4-source');
+}
+function pickPurchase(p) {
+  hideButtons('step4-source');
+  document.getElementById('final-user-msg').innerHTML = p + '<div class="ts">9:45 AM ✓✓</div>';
+  show('step-final');
+}
+function resetChat() {
+  ['step-no','step2','step3-partner','step3-source','step4-source','step-final'].forEach(function(id){
+    document.getElementById(id).style.display='none';
+  });
+  document.querySelectorAll('.wa-btn-group').forEach(function(g){ g.style.display=''; });
+}
+</script>
