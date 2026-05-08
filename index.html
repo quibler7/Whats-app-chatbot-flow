@@ -1,332 +1,654 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avery Dennison – B2B WhatsApp Flow</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#fff}
-  .stage{display:flex;flex-direction:column;align-items:center;padding:40px 20px;background:#fff;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif}
-  .phone{width:375px;height:780px;background:#000;border-radius:54px;position:relative;box-shadow:0 0 0 1.5px #444,0 0 0 4px #222,inset 0 0 0 2px #111,0 30px 80px rgba(0,0,0,0.35),0 10px 30px rgba(0,0,0,0.2);flex-shrink:0}
-  .phone-inner{position:absolute;inset:10px;background:#1c1c1e;border-radius:46px;overflow:hidden;display:flex;flex-direction:column}
-  .dynamic-island{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:20}
-  .status-bar{height:56px;background:#075E54;display:flex;align-items:flex-end;padding:0 20px 8px;flex-shrink:0;position:relative}
-  .status-icons{display:flex;gap:5px;align-items:center;margin-left:auto;font-size:11px;color:#fff}
-  .wa-header{background:#075E54;padding:8px 16px 10px;display:flex;align-items:center;gap:10px;flex-shrink:0}
-  .wa-avatar{width:38px;height:38px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#fff;flex-shrink:0}
-  .wa-name{font-size:15px;font-weight:600;color:#fff;line-height:1.2}
-  .wa-status{font-size:11px;color:rgba(255,255,255,0.7)}
-  .wa-icons{margin-left:auto;display:flex;gap:18px;color:#fff;font-size:18px}
-  .chat-area{flex:1;overflow-y:auto;background:#ECE5DD url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' opacity='0.07'%3E%3Ctext x='20' y='60' font-size='45' fill='%23128C7E'%3E✉%3C/text%3E%3C/svg%3E");padding:10px 12px;display:flex;flex-direction:column;gap:4px;scroll-behavior:smooth}
-  .msg{max-width:78%;padding:7px 10px 5px;border-radius:8px;font-size:13px;line-height:1.4;position:relative;word-break:break-word}
-  .msg-in{background:#fff;border-radius:0 8px 8px 8px;align-self:flex-start;box-shadow:0 1px 1px rgba(0,0,0,0.08)}
-  .msg-out{background:#DCF8C6;border-radius:8px 0 8px 8px;align-self:flex-end;box-shadow:0 1px 1px rgba(0,0,0,0.08)}
-  .msg-meta{font-size:10px;color:#999;text-align:right;margin-top:3px}
-  .msg-out .msg-meta{color:#5a9a6e}
-  .quick-replies{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px 0;align-self:flex-start;max-width:90%}
-  .qr{background:#fff;border:1.5px solid #25D366;border-radius:18px;padding:6px 14px;font-size:12px;color:#075E54;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
-  .qr:hover,.qr.active{background:#25D366;color:#fff}
-  .qr:disabled,.qr.used{opacity:.45;pointer-events:none}
-  .date-pill{align-self:center;background:rgba(0,0,0,0.18);color:#fff;font-size:11px;padding:4px 10px;border-radius:10px;margin:6px 0}
-  .typing{display:flex;gap:4px;padding:8px 12px;align-items:center}
-  .dot{width:7px;height:7px;border-radius:50%;background:#999;animation:blink 1.2s infinite}
-  .dot:nth-child(2){animation-delay:.2s}
-  .dot:nth-child(3){animation-delay:.4s}
-  @keyframes blink{0%,60%,100%{opacity:.3}30%{opacity:1}}
-  .typing-bubble{background:#fff;border-radius:0 8px 8px 8px;align-self:flex-start;box-shadow:0 1px 1px rgba(0,0,0,0.08)}
-  .cal-slot{display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:7px 10px;margin:4px 0;cursor:pointer;transition:all .15s;font-size:12px}
-  .cal-slot:hover{background:#dcfce7}
-  .cal-slot.booked{background:#dcfce7;border-color:#4ade80}
-  .cal-icon{font-size:16px}
-  .cal-label{flex:1;font-weight:500;color:#15803d}
-  .cal-add{font-size:11px;color:#16a34a;font-weight:600}
-  .cal-check{color:#22c55e;font-size:14px;display:none}
-  .cal-slot.booked .cal-check{display:inline}
-  .cal-slot.booked .cal-add{display:none}
-  .msg a{color:#075E54;text-decoration:underline;font-size:12px}
-  .section-label{font-size:10px;color:#888;margin:8px 0 2px;align-self:flex-start;padding-left:2px}
-  .bottom-bar{background:#f0f0f0;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-top:0.5px solid #ddd}
-  .msg-input{flex:1;background:#fff;border-radius:22px;padding:8px 14px;font-size:13px;border:none;outline:none;color:#333}
-  .send-btn{width:36px;height:36px;border-radius:50%;background:#075E54;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-  .hidden{display:none!important}
-  .progress{display:flex;justify-content:center;gap:6px;padding:12px 0 4px}
-  .prog-dot{width:7px;height:7px;border-radius:50%;background:#ccc;transition:background .3s}
-  .prog-dot.active{background:#25D366}
-  .reset-btn{margin-top:16px;background:#075E54;color:#fff;border:none;border-radius:20px;padding:10px 28px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
-  .reset-btn:hover{background:#064e3b}
-  .caption{font-size:12px;color:#888;margin-top:10px;text-align:center}
-</style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-<div class="stage">
-  <div class="progress" id="progress"></div>
-  <div class="phone">
-    <div class="dynamic-island"></div>
-    <div class="phone-inner">
-      <div class="status-bar">
-        <div class="status-icons">
-          <span>9:41</span>
-          <svg width="16" height="12" viewBox="0 0 16 12" fill="white" style="margin-left:4px"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="2.5" height="12" rx="1" opacity=".3"/></svg>
-          <svg width="16" height="12" viewBox="0 0 24 18" fill="white"><path d="M12 3C7.5 3 3.5 5 0.5 8L12 19L23.5 8C20.5 5 16.5 3 12 3Z"/><path d="M12 8C9.5 8 7.3 9 5.8 10.5L12 17L18.2 10.5C16.7 9 14.5 8 12 8Z" opacity=".6"/><circle cx="12" cy="13" r="3"/></svg>
-          <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0" y="1" width="22" height="10" rx="2" stroke="white" stroke-width="1.2"/><rect x="1.5" y="2.5" width="16" height="7" rx="1" fill="white"/><path d="M23 4v4a2 2 0 000-4z" fill="white"/></svg>
-        </div>
-      </div>
-      <div class="wa-header">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white" style="opacity:.9;cursor:pointer"><path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"/></svg>
-        <div class="wa-avatar">AD</div>
-        <div>
-          <div class="wa-name">Avery Dennison</div>
-          <div class="wa-status">online</div>
-        </div>
-        <div class="wa-icons">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="5" cy="12" r="1.5"/></svg>
-        </div>
-      </div>
-      <div class="chat-area" id="chat">
-        <div class="date-pill">Today</div>
-      </div>
-      <div class="bottom-bar">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
-        <input class="msg-input" placeholder="Message" readonly/>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.8"><path d="M21.66 12a1 1 0 01-.93.67H13v7.73a1 1 0 01-2 0V12H3.27a1 1 0 01-.67-1.73l8.73-8.73a1 1 0 011.34 0l8.73 8.73a1 1 0 01.26 1z" fill="#25D366" stroke="none"/></svg>
+  body {
+    background: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    padding: 40px 20px 80px;
+    overflow-x: hidden;
+  }
+
+  h1 {
+    color: #fff;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 32px;
+    font-weight: 400;
+  }
+
+  /* ── iPhone 15 Pro shell ── */
+  .iphone {
+    width: 393px;
+    height: 852px;
+    background: #1c1c1e;
+    border-radius: 54px;
+    position: relative;
+    box-shadow:
+      0 0 0 1.5px #3a3a3c,
+      0 0 0 3px #2c2c2e,
+      0 50px 120px rgba(0,0,0,.9),
+      inset 0 0 0 1px rgba(255,255,255,.07);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .iphone::before {
+    content: '';
+    position: absolute;
+    left: -3px; top: 130px;
+    width: 3px; height: 36px;
+    background: #3a3a3c;
+    border-radius: 2px 0 0 2px;
+    box-shadow: 0 50px 0 #3a3a3c, 0 100px 0 #3a3a3c;
+  }
+  .iphone::after {
+    content: '';
+    position: absolute;
+    right: -3px; top: 160px;
+    width: 3px; height: 70px;
+    background: #3a3a3c;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .screen {
+    position: absolute;
+    inset: 6px;
+    border-radius: 48px;
+    overflow: hidden;
+    background: #111b21;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dynamic-island {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 34px;
+    background: #000;
+    border-radius: 20px;
+    z-index: 100;
+  }
+
+  .status-bar {
+    height: 54px;
+    background: #1f2c34;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 20px 8px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 50;
+  }
+  .status-time { color: #fff; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+  .status-icons svg { opacity: 0.9; }
+
+  .wa-header {
+    background: #1f2c34;
+    padding: 10px 16px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    flex-shrink: 0;
+  }
+  .back-arrow { color: #00a884; font-size: 22px; line-height: 1; margin-right: 2px; }
+  .contact-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00a884, #128c7e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .contact-info { flex: 1; }
+  .contact-name { color: #e9edef; font-size: 15px; font-weight: 600; }
+  .contact-status { color: #8696a0; font-size: 12px; margin-top: 1px; }
+  .header-actions { display: flex; gap: 20px; }
+  .header-actions svg { color: #8696a0; }
+
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #0b141a;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23182229' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    padding: 12px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    scroll-behavior: smooth;
+  }
+  .chat-area::-webkit-scrollbar { display: none; }
+
+  .date-pill {
+    align-self: center;
+    background: #182229;
+    color: #8696a0;
+    font-size: 11.5px;
+    padding: 5px 12px;
+    border-radius: 8px;
+    margin: 6px 0;
+  }
+
+  .msg {
+    max-width: 82%;
+    padding: 7px 10px 6px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    line-height: 1.45;
+    position: relative;
+    word-break: break-word;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .msg.visible { opacity: 1; transform: none; }
+
+  .msg-in {
+    background: #202c33;
+    color: #e9edef;
+    align-self: flex-start;
+    border-top-left-radius: 2px;
+  }
+  .msg-in::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -6px;
+    border-width: 0 6px 8px 0;
+    border-style: solid;
+    border-color: transparent #202c33 transparent transparent;
+  }
+
+  .msg-out {
+    background: #005c4b;
+    color: #e9edef;
+    align-self: flex-end;
+    border-top-right-radius: 2px;
+  }
+  .msg-out::before {
+    content: '';
+    position: absolute;
+    top: 0; right: -6px;
+    border-width: 0 0 8px 6px;
+    border-style: solid;
+    border-color: transparent transparent transparent #005c4b;
+  }
+
+  .msg-time {
+    font-size: 10.5px;
+    color: #8696a0;
+    text-align: right;
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+  }
+  .msg-out .msg-time { color: rgba(134,150,160,.9); }
+  .tick { color: #53bdeb; font-size: 12px; }
+
+  .wa-options {
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 2px;
+    width: 82%;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .wa-options.visible { opacity: 1; transform: none; }
+
+  .wa-btn {
+    background: #202c33;
+    border: 1px solid #2a3942;
+    border-radius: 8px;
+    color: #00a884;
+    font-size: 13px;
+    padding: 10px 14px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 500;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    line-height: 1.3;
+  }
+  .wa-btn:hover { background: #2a3942; }
+  .wa-btn.selected { background: #005c4b; color: #e9edef; border-color: #005c4b; }
+
+  .wa-link { color: #53bdeb; text-decoration: none; }
+
+  .typing {
+    background: #202c33;
+    border-radius: 8px;
+    border-top-left-radius: 2px;
+    padding: 10px 14px;
+    align-self: flex-start;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .typing.visible { opacity: 1; }
+  .typing span {
+    width: 7px; height: 7px;
+    background: #8696a0;
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: .2s; }
+  .typing span:nth-child(3) { animation-delay: .4s; }
+  @keyframes bounce {
+    0%,60%,100% { transform: translateY(0); }
+    30% { transform: translateY(-5px); }
+  }
+
+  /* system note pill (for automated follow-up label) */
+  .system-note {
+    align-self: center;
+    background: #182229;
+    color: #8696a0;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 8px;
+    margin: 8px 0 2px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.35s;
+  }
+  .system-note.visible { opacity: 1; }
+
+  .input-bar {
+    background: #1f2c34;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .input-field {
+    flex: 1;
+    background: #2a3942;
+    border: none;
+    border-radius: 24px;
+    color: #e9edef;
+    font-size: 14px;
+    padding: 9px 14px;
+    outline: none;
+    font-family: inherit;
+  }
+  .input-field::placeholder { color: #8696a0; }
+  .send-btn {
+    width: 40px; height: 40px;
+    background: #00a884;
+    border: none;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .home-indicator {
+    height: 30px;
+    background: #1f2c34;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .home-bar { width: 120px; height: 4px; background: rgba(255,255,255,.3); border-radius: 2px; }
+
+  .controls { margin-top: 28px; text-align: center; }
+  .controls p { color: rgba(255,255,255,.35); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+  .restart-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.15);
+    color: rgba(255,255,255,.5);
+    padding: 8px 24px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .restart-btn:hover { border-color: #00a884; color: #00a884; }
+</style>
+</head>
+<body>
+
+<h1>Avery Dennison · B2B WhatsApp Flow</h1>
+
+<div class="iphone">
+  <div class="dynamic-island"></div>
+  <div class="screen">
+
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="2.5" height="12" rx="1" opacity=".3"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><path d="M8 2.4C5.6 2.4 3.5 3.4 2 5l1.5 1.5C4.7 5.2 6.2 4.4 8 4.4s3.3.8 4.5 2.1L14 5c-1.5-1.6-3.6-2.6-6-2.6z"/><path d="M8 5.6c-1.4 0-2.6.6-3.5 1.5L6 8.6C6.6 8 7.2 7.6 8 7.6s1.4.4 2 1l1.5-1.5C10.6 6.2 9.4 5.6 8 5.6z"/><circle cx="8" cy="10" r="1.5"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="white"><rect x="0" y="1" width="21" height="10" rx="3" stroke="white" stroke-width="1.2" fill="none"/><rect x="2" y="3" width="14" height="6" rx="1.5" fill="white"/><path d="M22.5 4v4a2 2 0 000-4z"/></svg>
       </div>
     </div>
+
+    <div class="wa-header">
+      <span class="back-arrow">‹</span>
+      <div class="contact-avatar">AD</div>
+      <div class="contact-info">
+        <div class="contact-name">Avery Dennison</div>
+        <div class="contact-status">online</div>
+      </div>
+      <div class="header-actions">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.29 6.29l1.28-1.28a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+      </div>
+    </div>
+
+    <div class="chat-area" id="chatArea">
+      <div class="date-pill">Today</div>
+    </div>
+
+    <div class="input-bar">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8696a0" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      <input class="input-field" placeholder="Message" readonly>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8696a0" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+      <button class="send-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9z" stroke="white" stroke-width="1.5" fill="white"/></svg>
+      </button>
+    </div>
+
+    <div class="home-indicator"><div class="home-bar"></div></div>
   </div>
-  <p class="caption">Tap the quick-reply buttons to walk through the full B2B lead flow</p>
-  <button class="reset-btn hidden" id="resetBtn" onclick="resetFlow()">↺ Restart flow</button>
+</div>
+
+<div class="controls">
+  <p>Interactive demo</p>
+  <button class="restart-btn" onclick="restartFlow()">↺ Restart Flow</button>
 </div>
 
 <script>
-const chat = document.getElementById('chat');
-const progressEl = document.getElementById('progress');
-const resetBtn = document.getElementById('resetBtn');
+const chat = document.getElementById('chatArea');
 
-const TOTAL_STEPS = 7;
-let step = 0;
-let isTyping = false;
-
-function updateProgress(){
-  progressEl.innerHTML = '';
-  for(let i=0;i<TOTAL_STEPS;i++){
-    const d = document.createElement('div');
-    d.className = 'prog-dot' + (i < step ? ' active':'');
-    progressEl.appendChild(d);
-  }
+function now() {
+  const d = new Date();
+  return d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
 }
 
-function scrollBottom(){
-  setTimeout(()=>{ chat.scrollTop = chat.scrollHeight; }, 50);
+function appendMsg(text, direction, delay) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      if (direction === 'in') {
+        const t = document.createElement('div');
+        t.className = 'typing visible';
+        t.innerHTML = '<span></span><span></span><span></span>';
+        chat.appendChild(t);
+        chat.scrollTop = chat.scrollHeight;
+        setTimeout(() => {
+          t.remove();
+          const m = document.createElement('div');
+          m.className = `msg msg-${direction}`;
+          m.innerHTML = text + `<div class="msg-time">${now()}</div>`;
+          chat.appendChild(m);
+          requestAnimationFrame(() => m.classList.add('visible'));
+          chat.scrollTop = chat.scrollHeight;
+          resolve(m);
+        }, 900);
+      } else {
+        const m = document.createElement('div');
+        m.className = `msg msg-${direction}`;
+        m.innerHTML = text + `<div class="msg-time">${now()} <span class="tick">✓✓</span></div>`;
+        chat.appendChild(m);
+        requestAnimationFrame(() => m.classList.add('visible'));
+        chat.scrollTop = chat.scrollHeight;
+        resolve(m);
+      }
+    }, delay);
+  });
 }
 
-function addMsg(text, type, delay=0){
-  return new Promise(resolve=>{
-    setTimeout(()=>{
-      const d = document.createElement('div');
-      d.className = 'msg msg-' + type;
-      d.innerHTML = text;
-      const meta = document.createElement('div');
-      meta.className = 'msg-meta';
-      const now = new Date();
-      meta.textContent = now.getHours()+':'+String(now.getMinutes()).padStart(2,'0') + (type==='out'?' ✓✓':'');
-      d.appendChild(meta);
-      chat.appendChild(d);
-      scrollBottom();
+function appendSystemNote(text, delay) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const n = document.createElement('div');
+      n.className = 'system-note';
+      n.textContent = text;
+      chat.appendChild(n);
+      requestAnimationFrame(() => n.classList.add('visible'));
+      chat.scrollTop = chat.scrollHeight;
       resolve();
     }, delay);
   });
 }
 
-function showTyping(duration=1200){
-  return new Promise(resolve=>{
-    const b = document.createElement('div');
-    b.className = 'msg typing-bubble';
-    b.id = 'typing';
-    b.innerHTML = '<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-    chat.appendChild(b);
-    scrollBottom();
-    setTimeout(()=>{ const t = document.getElementById('typing'); if(t) t.remove(); resolve(); }, duration);
-  });
-}
-
-function addQuickReplies(options, onSelect){
-  const wrap = document.createElement('div');
-  wrap.className = 'quick-replies';
-  wrap.id = 'qr-wrap';
-  options.forEach((opt,i)=>{
-    const btn = document.createElement('button');
-    btn.className = 'qr';
-    btn.textContent = opt.label;
-    btn.onclick = ()=>{
-      if(isTyping) return;
-      isTyping = true;
-      wrap.querySelectorAll('button').forEach(b=>{ b.classList.add('used'); b.disabled=true; });
-      btn.classList.add('active');
-      addMsg(opt.label, 'out').then(()=>{
-        isTyping = false;
-        onSelect(i, opt);
+function appendOptions(options, delay) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const wrap = document.createElement('div');
+      wrap.className = 'wa-options';
+      options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'wa-btn';
+        btn.textContent = opt.label;
+        btn.onclick = () => {
+          wrap.querySelectorAll('.wa-btn').forEach(b => b.disabled = true);
+          btn.classList.add('selected');
+          resolve(i);
+        };
+        wrap.appendChild(btn);
       });
-    };
-    wrap.appendChild(btn);
+      chat.appendChild(wrap);
+      requestAnimationFrame(() => wrap.classList.add('visible'));
+      chat.scrollTop = chat.scrollHeight;
+    }, delay);
   });
-  chat.appendChild(wrap);
-  scrollBottom();
 }
 
-function removeQR(){
-  const q = document.getElementById('qr-wrap');
-  if(q) q.remove();
-}
+const GOODBYE = `No worries! 👋<br><br>Whenever you're ready, our team is always here to help. Feel free to reach out to us or explore our range at <a class="wa-link" href="#">https://graphics.averydennison.com/ap-en/home.html</a><br><br>Have a great day! 👋`;
 
-function addCalendarSlots(){
-  const days = ['Monday, 12 May','Tuesday, 13 May'];
-  const slots = [
-    {time:'11:00 AM – 1:00 PM', day:0},
-    {time:'1:00 PM – 3:00 PM', day:0},
-    {time:'3:00 PM – 5:00 PM', day:0},
-    {time:'11:00 AM – 1:00 PM', day:1},
-    {time:'1:00 PM – 3:00 PM', day:1},
-    {time:'3:00 PM – 5:00 PM', day:1},
-  ];
+async function runFlow() {
 
-  const wrap = document.createElement('div');
-  wrap.style.cssText = 'align-self:flex-start;max-width:88%;margin:4px 0';
+  // ── STEP 1: Opening message ──
+  await appendMsg(
+    `Hi Alex! 👋<br><br>Thanks for reaching out to <b>Avery Dennison Graphics Solutions</b>. We've received your sample request for <b>Supreme PPF</b> from <b>AutoShield Studios</b> in <b>Delhi</b> and we're excited to connect with you.<br><br>What best describes what you're looking for?`,
+    'in', 600
+  );
 
-  days.forEach(day=>{
-    const lbl = document.createElement('div');
-    lbl.className = 'section-label';
-    lbl.textContent = day;
-    wrap.appendChild(lbl);
-  });
+  const pick1 = await appendOptions([
+    { label: '🤝 I want to become an Avery Dennison certified partner / co-branded studio' },
+    { label: '🎞️ I\'m looking to source films, wraps, or graphics materials for my business' },
+    { label: '⚡ Both — I\'m interested in partnering and sourcing' },
+    { label: '🤔 Not sure for now' }
+  ], 200);
 
-  let firstSlotMsg = document.createElement('div');
-  firstSlotMsg.className = 'msg msg-in';
-  firstSlotMsg.innerHTML = '<div style="font-size:13px;font-weight:600;color:#075E54;margin-bottom:6px">📅 Pick a time slot</div>';
+  // ── Option 4: Not sure ──
+  if (pick1 === 3) {
+    await appendMsg('Not sure for now', 'out', 300);
 
-  days.forEach((day,di)=>{
-    const lbl = document.createElement('div');
-    lbl.style.cssText='font-size:11px;color:#888;margin:8px 0 3px;font-weight:600;text-transform:uppercase;letter-spacing:.5px';
-    lbl.textContent = day;
-    firstSlotMsg.appendChild(lbl);
+    // Automated follow-up after delay
+    await appendSystemNote('🔔 Automated follow-up', 800);
+    await appendMsg(
+      `Hi Alex! 👋<br><br>Just checking in — your <b>Supreme PPF</b> enquiry from <b>AutoShield Studios</b> is still with us. Whenever you're ready, our team is just a message away. Shall we continue?`,
+      'in', 400
+    );
 
-    slots.filter(s=>s.day===di).forEach(slot=>{
-      const row = document.createElement('div');
-      row.className = 'cal-slot';
-      row.innerHTML = `<span class="cal-icon">🕐</span><span class="cal-label">${slot.time}</span><span class="cal-add">+ Add to Calendar</span><span class="cal-check">✓ Added</span>`;
-      row.onclick = ()=>{
-        if(row.classList.contains('booked')) return;
-        row.classList.add('booked');
-        row.querySelector('.cal-icon').textContent='✅';
-        addCalToCalendar(slot.time, day);
-        setTimeout(()=> showConfirmation(slot.time, day), 300);
-      };
-      firstSlotMsg.appendChild(row);
-    });
-  });
+    const pickFollowup = await appendOptions([
+      { label: '✅ Yes, let\'s go' },
+      { label: '⏳ Maybe later' }
+    ], 200);
 
-  const meta = document.createElement('div');
-  meta.className = 'msg-meta';
-  const now = new Date();
-  meta.textContent = now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
-  firstSlotMsg.appendChild(meta);
-  chat.appendChild(firstSlotMsg);
-  scrollBottom();
-}
-
-function addCalToCalendar(time, day){
-  const dateMap = {'Monday, 12 May':'20260512','Tuesday, 13 May':'20260513'};
-  const timeMap = {'11:00 AM – 1:00 PM':['110000','130000'],'1:00 PM – 3:00 PM':['130000','150000'],'3:00 PM – 5:00 PM':['150000','170000']};
-  const d = dateMap[day] || '20260512';
-  const t = timeMap[time] || ['110000','130000'];
-  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Avery+Dennison+Partnership+Call&dates=${d}T${t[0]}/${d}T${t[1]}&details=B2B+Partnership+discussion+with+Avery+Dennison+Graphics+Solutions&location=Video+Call`;
-  window.open(url,'_blank');
-}
-
-function showConfirmation(time, day){
-  addMsg(`✅ Got it! Our team will connect with you on <b>${day}</b> at <b>${time}</b>.<br><br>A calendar invite has been sent. Looking forward to it! 🙌`, 'in');
-  step = TOTAL_STEPS;
-  updateProgress();
-  resetBtn.classList.remove('hidden');
-  scrollBottom();
-}
-
-async function startFlow(){
-  step = 1; updateProgress();
-  await showTyping(1500);
-  await addMsg(`Hi [First Name]! 👋<br><br>Thanks for reaching out to <b>Avery Dennison Graphics Solutions</b>. We've received your sample request for [Product Name] from [Company Name] in [City] and we're excited to connect with you!<br><br>What best describes what you're looking for?`, 'in');
-  addQuickReplies([
-    {label:'1 - Become an AD certified partner'},
-    {label:'2 - Source films / wraps / graphics'},
-    {label:'3 - Both – partner & source'},
-  ], async (i, opt)=>{
-    removeQR();
-    step=2; updateProgress();
-    if(i === 0){
-      await showTyping(1200);
-      await addMsg(`Glad to hear! When are you looking to get started with the partnership?`, 'in');
-      addQuickReplies([
-        {label:'1 - As soon as possible'},
-        {label:'2 - In 1–3 months'},
-        {label:'3 - Just exploring'},
-      ], async(j)=>{
-        removeQR();
-        step=3; updateProgress();
-        if(j===2){
-          await showTyping(1000);
-          await addMsg(`No worries [First Name]! Whenever you're ready, our team is always here to help. Feel free to explore our range at <a href="https://graphics.averydennison.com/ap-en/home.html" target="_blank">graphics.averydennison.com</a><br><br>Have a great day! 👋`, 'in');
-          step=TOTAL_STEPS; updateProgress(); resetBtn.classList.remove('hidden');
-        } else {
-          await showTyping(1000);
-          await addMsg(`Thank you [First Name]! 🙌<br><br>Our partnerships team will get in touch to walk you through the <b>Avery Dennison certified partner programme</b>. Feel free to explore our range at <a href="https://graphics.averydennison.com/ap-en/home.html" target="_blank">graphics.averydennison.com</a><br><br>Looking forward to connecting!`, 'in');
-          step=4; updateProgress();
-          await showTyping(900);
-          await addMsg(`What is your preferred time to take this conversation further? Let's set up a call & get started!`, 'in');
-          addCalendarSlots();
-          step=5; updateProgress();
-        }
-      });
-    } else {
-      await showTyping(1200);
-      await addMsg(`What is your approximate monthly requirement?`, 'in');
-      addQuickReplies([
-        {label:'1 - Small (<500 sqft / <5 vehicles)'},
-        {label:'2 - Medium (500–2000 sqft / 5–20)'},
-        {label:'3 - Large (>2000 sqft / 20+)'},
-        {label:'4 - One-time / Not sure yet'},
-        {label:'5 - Other'},
-      ], async(j)=>{
-        removeQR();
-        step=4; updateProgress();
-        await showTyping(1100);
-        await addMsg(`When are you looking to make a purchase or start the project?`, 'in');
-        addQuickReplies([
-          {label:'1 - Immediately / Within 1 month'},
-          {label:'2 - In 1–3 months'},
-          {label:'3 - Just exploring'},
-        ], async(k)=>{
-          removeQR();
-          step=5; updateProgress();
-          if(k===2){
-            await showTyping(1000);
-            await addMsg(`No worries [First Name]! Whenever you're ready, our team is always here to help. Feel free to reach out or explore our range at <a href="https://graphics.averydennison.com/ap-en/home.html" target="_blank">graphics.averydennison.com</a><br><br>Have a great day! 👋`, 'in');
-            step=TOTAL_STEPS; updateProgress(); resetBtn.classList.remove('hidden');
-          } else {
-            await showTyping(1000);
-            await addMsg(`What is your preferred time to take this conversation further? Let's set up a call & get started! 📅`, 'in');
-            addCalendarSlots();
-            step=6; updateProgress();
-          }
-        });
-      });
+    if (pickFollowup === 1) {
+      await appendMsg('Maybe later', 'out', 300);
+      await appendMsg(GOODBYE, 'in', 400);
+      return;
     }
-  });
+    await appendMsg("Yes, let's go", 'out', 300);
+    // Fall through to monthly requirement
+    await goToMonthlyRequirement();
+    return;
+  }
+
+  // ── Options 1, 2, 3 ──
+  const labels = [
+    'I want to become an Avery Dennison certified partner / co-branded studio',
+    "I'm looking to source films, wraps, or graphics materials for my business",
+    'Both — interested in partnering and sourcing'
+  ];
+  await appendMsg(labels[pick1], 'out', 300);
+
+  if (pick1 === 0) {
+    // ── Partner path → timeline ──
+    await goToPartnerTimeline();
+  } else {
+    // ── Sourcing or Both → monthly requirement ──
+    await goToMonthlyRequirement();
+  }
 }
 
-function resetFlow(){
+// ── PARTNER: When are you looking to start? ──
+async function goToPartnerTimeline() {
+  await appendMsg(
+    `Glad to hear! 🙌 When are you looking to get started with the partnership?`,
+    'in', 400
+  );
+
+  const pick = await appendOptions([
+    { label: '🚀 As soon as possible' },
+    { label: '📅 In the next 1 to 3 months' },
+    { label: '🔍 Just exploring for now' }
+  ], 200);
+
+  const labels = ['As soon as possible', 'In the next 1 to 3 months', 'Just exploring for now'];
+  await appendMsg(labels[pick], 'out', 300);
+
+  if (pick === 2) {
+    await appendMsg(GOODBYE, 'in', 400);
+  } else {
+    // Options 1 or 2 → schedule call
+    await goToScheduleCall();
+  }
+}
+
+// ── MONTHLY REQUIREMENT ──
+async function goToMonthlyRequirement() {
+  await appendMsg(
+    `What is your approximate monthly requirement?`,
+    'in', 400
+  );
+
+  const pick = await appendOptions([
+    { label: '📦 Small — below 500 sq ft or fewer than 5 vehicles/month' },
+    { label: '📦📦 Medium — 500–2000 sq ft or 5–20 vehicles/month' },
+    { label: '🏭 Large — above 2000 sq ft or 20+ vehicles/month' },
+    { label: '🔨 One-time project / Not sure yet' },
+    { label: '💬 Other (please tell us more)' }
+  ], 200);
+
+  const labels = [
+    'Small — below 500 sq ft or fewer than 5 vehicles/month',
+    'Medium — 500–2000 sq ft or 5–20 vehicles/month',
+    'Large — above 2000 sq ft or 20+ vehicles/month',
+    'One-time project / Not sure yet',
+    'Other'
+  ];
+  await appendMsg(labels[pick], 'out', 300);
+
+  // All options lead to purchase timeline
+  await goToPurchaseTimeline();
+}
+
+// ── PURCHASE TIMELINE ──
+async function goToPurchaseTimeline() {
+  await appendMsg(
+    `When are you looking to make a purchase or start the project?`,
+    'in', 500
+  );
+
+  const pick = await appendOptions([
+    { label: '⚡ Immediately / Within 1 month' },
+    { label: '📅 In the next 1–3 months' },
+    { label: '🔍 Just exploring for now' }
+  ], 200);
+
+  const labels = [
+    'Immediately / Within 1 month',
+    'In the next 1–3 months',
+    'Just exploring for now'
+  ];
+  await appendMsg(labels[pick], 'out', 300);
+
+  if (pick === 2) {
+    await appendMsg(GOODBYE, 'in', 400);
+  } else {
+    // Options 1 or 2 → schedule call
+    await goToScheduleCall();
+  }
+}
+
+// ── SCHEDULE CALL ──
+async function goToScheduleCall() {
+  await appendMsg(
+    `What is your preferred time to take this conversation further? Let's set up a call & get started!`,
+    'in', 500
+  );
+
+  const pick = await appendOptions([
+    { label: '📅 Mon–Tue' },
+    { label: '📅 Wed–Thu' },
+    { label: '📅 Fri–Sat' }
+  ], 200);
+
+  const days = ['Mon–Tue', 'Wed–Thu', 'Fri–Sat'];
+  await appendMsg(days[pick], 'out', 300);
+
+  // Time slot
+  await appendMsg(
+    `Great! Please pick a time slot that works best for you:`,
+    'in', 400
+  );
+
+  const pickTime = await appendOptions([
+    { label: '🕙 10:00 AM – 12:00 PM' },
+    { label: '🕑 2:00 PM – 4:00 PM' },
+    { label: '🕔 4:00 PM – 6:00 PM' }
+  ], 200);
+
+  const slots = ['10:00 AM – 12:00 PM', '2:00 PM – 4:00 PM', '4:00 PM – 6:00 PM'];
+  await appendMsg(slots[pickTime], 'out', 300);
+
+  // Confirmation
+  await appendMsg(
+    `Thank you Alex! 🙌<br><br>Our partnerships team will get in touch with you on <b>${days[pick]}</b> between <b>${slots[pickTime]}</b> to walk you through the Avery Dennison certified partner programme.<br><br>Meanwhile, feel free to explore our range of products at 👉<br><a class="wa-link" href="#">https://graphics.averydennison.com/ap-en/home.html</a><br><br>Looking forward to connecting! 🤝`,
+    'in', 400
+  );
+}
+
+function restartFlow() {
   chat.innerHTML = '<div class="date-pill">Today</div>';
-  step=0; updateProgress();
-  resetBtn.classList.add('hidden');
-  isTyping = false;
-  setTimeout(startFlow, 400);
+  runFlow();
 }
 
-updateProgress();
-startFlow();
+runFlow();
 </script>
-
+</body>
+</html>
