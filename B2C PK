@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avery Dennison – B2C WhatsApp Flow</title>
+<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    padding: 40px 20px 80px;
+    overflow-x: hidden;
+  }
+
+  h1 {
+    color: #fff;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 32px;
+    font-weight: 400;
+  }
+
+  /* ── iPhone 15 Pro shell ── */
+  .iphone {
+    width: 393px;
+    height: 852px;
+    background: #1c1c1e;
+    border-radius: 54px;
+    position: relative;
+    box-shadow:
+      0 0 0 1.5px #3a3a3c,
+      0 0 0 3px #2c2c2e,
+      0 50px 120px rgba(0,0,0,.9),
+      inset 0 0 0 1px rgba(255,255,255,.07);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* Side buttons */
+  .iphone::before {
+    content: '';
+    position: absolute;
+    left: -3px; top: 130px;
+    width: 3px; height: 36px;
+    background: #3a3a3c;
+    border-radius: 2px 0 0 2px;
+    box-shadow: 0 50px 0 #3a3a3c, 0 100px 0 #3a3a3c;
+  }
+  .iphone::after {
+    content: '';
+    position: absolute;
+    right: -3px; top: 160px;
+    width: 3px; height: 70px;
+    background: #3a3a3c;
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* Screen bezel */
+  .screen {
+    position: absolute;
+    inset: 6px;
+    border-radius: 48px;
+    overflow: hidden;
+    background: #111b21;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Dynamic island */
+  .dynamic-island {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 34px;
+    background: #000;
+    border-radius: 20px;
+    z-index: 100;
+  }
+
+  /* Status bar */
+  .status-bar {
+    height: 54px;
+    background: #1f2c34;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 20px 8px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 50;
+  }
+  .status-time {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .status-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .status-icons svg { opacity: 0.9; }
+
+  /* WhatsApp header */
+  .wa-header {
+    background: #1f2c34;
+    padding: 10px 16px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    flex-shrink: 0;
+  }
+  .back-arrow {
+    color: #00a884;
+    font-size: 22px;
+    line-height: 1;
+    margin-right: 2px;
+  }
+  .contact-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00a884, #128c7e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .contact-info { flex: 1; }
+  .contact-name { color: #e9edef; font-size: 15px; font-weight: 600; }
+  .contact-status { color: #8696a0; font-size: 12px; margin-top: 1px; }
+  .header-actions { display: flex; gap: 20px; }
+  .header-actions svg { color: #8696a0; }
+
+  /* Wallpaper + chat area */
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #0b141a;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23182229' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    padding: 12px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    scroll-behavior: smooth;
+  }
+  .chat-area::-webkit-scrollbar { display: none; }
+
+  /* Date pill */
+  .date-pill {
+    align-self: center;
+    background: #182229;
+    color: #8696a0;
+    font-size: 11.5px;
+    padding: 5px 12px;
+    border-radius: 8px;
+    margin: 6px 0;
+  }
+
+  /* Messages */
+  .msg {
+    max-width: 82%;
+    padding: 7px 10px 6px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    line-height: 1.45;
+    position: relative;
+    word-break: break-word;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .msg.visible { opacity: 1; transform: none; }
+
+  .msg-in {
+    background: #202c33;
+    color: #e9edef;
+    align-self: flex-start;
+    border-top-left-radius: 2px;
+  }
+  .msg-in::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -6px;
+    border-width: 0 6px 8px 0;
+    border-style: solid;
+    border-color: transparent #202c33 transparent transparent;
+  }
+
+  .msg-out {
+    background: #005c4b;
+    color: #e9edef;
+    align-self: flex-end;
+    border-top-right-radius: 2px;
+  }
+  .msg-out::before {
+    content: '';
+    position: absolute;
+    top: 0; right: -6px;
+    border-width: 0 0 8px 6px;
+    border-style: solid;
+    border-color: transparent transparent transparent #005c4b;
+  }
+
+  .msg-time {
+    font-size: 10.5px;
+    color: #8696a0;
+    text-align: right;
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+  }
+  .msg-out .msg-time { color: rgba(134,150,160,.9); }
+
+  .tick { color: #53bdeb; font-size: 12px; }
+
+  /* Option buttons */
+  .wa-options {
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 2px;
+    width: 82%;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .wa-options.visible { opacity: 1; transform: none; }
+
+  .wa-btn {
+    background: #202c33;
+    border: 1px solid #2a3942;
+    border-radius: 8px;
+    color: #00a884;
+    font-size: 13.5px;
+    padding: 10px 14px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 500;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .wa-btn:hover { background: #2a3942; }
+  .wa-btn.selected { background: #005c4b; color: #e9edef; border-color: #005c4b; }
+
+  /* Link style */
+  .wa-link { color: #53bdeb; text-decoration: none; }
+
+  /* Typing indicator */
+  .typing {
+    background: #202c33;
+    border-radius: 8px;
+    border-top-left-radius: 2px;
+    padding: 10px 14px;
+    align-self: flex-start;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .typing.visible { opacity: 1; }
+  .typing span {
+    width: 7px; height: 7px;
+    background: #8696a0;
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: .2s; }
+  .typing span:nth-child(3) { animation-delay: .4s; }
+  @keyframes bounce {
+    0%,60%,100% { transform: translateY(0); }
+    30% { transform: translateY(-5px); }
+  }
+
+  /* Input bar */
+  .input-bar {
+    background: #1f2c34;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .input-field {
+    flex: 1;
+    background: #2a3942;
+    border: none;
+    border-radius: 24px;
+    color: #e9edef;
+    font-size: 14px;
+    padding: 9px 14px;
+    outline: none;
+    font-family: inherit;
+  }
+  .input-field::placeholder { color: #8696a0; }
+  .send-btn {
+    width: 40px; height: 40px;
+    background: #00a884;
+    border: none;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .send-btn svg { color: #fff; }
+
+  /* Home indicator */
+  .home-indicator {
+    height: 30px;
+    background: #1f2c34;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .home-bar {
+    width: 120px; height: 4px;
+    background: rgba(255,255,255,.3);
+    border-radius: 2px;
+  }
+
+  /* Control panel below phone */
+  .controls {
+    margin-top: 28px;
+    text-align: center;
+  }
+  .controls p {
+    color: rgba(255,255,255,.35);
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .restart-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.15);
+    color: rgba(255,255,255,.5);
+    padding: 8px 24px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .restart-btn:hover { border-color: #00a884; color: #00a884; }
+</style>
+</head>
+<body>
+
+<h1>Avery Dennison · B2C WhatsApp Flow</h1>
+
+<div class="iphone">
+  <div class="dynamic-island"></div>
+  <div class="screen">
+
+    <!-- Status bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="2.5" height="12" rx="1" opacity=".3"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><path d="M8 2.4C5.6 2.4 3.5 3.4 2 5l1.5 1.5C4.7 5.2 6.2 4.4 8 4.4s3.3.8 4.5 2.1L14 5c-1.5-1.6-3.6-2.6-6-2.6z"/><path d="M8 5.6c-1.4 0-2.6.6-3.5 1.5L6 8.6C6.6 8 7.2 7.6 8 7.6s1.4.4 2 1l1.5-1.5C10.6 6.2 9.4 5.6 8 5.6z"/><circle cx="8" cy="10" r="1.5"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="white"><rect x="0" y="1" width="21" height="10" rx="3" stroke="white" stroke-width="1.2" fill="none"/><rect x="2" y="3" width="14" height="6" rx="1.5" fill="white"/><path d="M22.5 4v4a2 2 0 000-4z"/></svg>
+      </div>
+    </div>
+
+    <!-- WA header -->
+    <div class="wa-header">
+      <span class="back-arrow">‹</span>
+      <div class="contact-avatar">AD</div>
+      <div class="contact-info">
+        <div class="contact-name">Avery Dennison</div>
+        <div class="contact-status">online</div>
+      </div>
+      <div class="header-actions">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.29 6.29l1.28-1.28a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+      </div>
+    </div>
+
+    <!-- Chat area -->
+    <div class="chat-area" id="chatArea">
+      <div class="date-pill">Today</div>
+    </div>
+
+    <!-- Input bar -->
+    <div class="input-bar">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8696a0" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      <input class="input-field" placeholder="Message" readonly>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8696a0" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+      <button class="send-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9z" stroke="white" stroke-width="1.5" fill="white"/></svg>
+      </button>
+    </div>
+
+    <div class="home-indicator"><div class="home-bar"></div></div>
+  </div>
+</div>
+
+<div class="controls">
+  <p>Interactive demo</p>
+  <button class="restart-btn" onclick="restartFlow()">↺ Restart Flow</button>
+</div>
+
+<script>
+const chat = document.getElementById('chatArea');
+let currentStep = 0;
+let selectedProduct = 'PPF'; // default for demo
+
+function now() {
+  const d = new Date();
+  return d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+function appendMsg(text, direction, delay) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      // Show typing first for inbound
+      if (direction === 'in') {
+        const t = document.createElement('div');
+        t.className = 'typing visible';
+        t.innerHTML = '<span></span><span></span><span></span>';
+        chat.appendChild(t);
+        chat.scrollTop = chat.scrollHeight;
+
+        setTimeout(() => {
+          t.remove();
+          const m = document.createElement('div');
+          m.className = `msg msg-${direction}`;
+          m.innerHTML = text + `<div class="msg-time">${now()}</div>`;
+          chat.appendChild(m);
+          requestAnimationFrame(() => { m.classList.add('visible'); });
+          chat.scrollTop = chat.scrollHeight;
+          resolve(m);
+        }, 900);
+      } else {
+        const m = document.createElement('div');
+        m.className = `msg msg-${direction}`;
+        m.innerHTML = text + `<div class="msg-time">${now()} <span class="tick">✓✓</span></div>`;
+        chat.appendChild(m);
+        requestAnimationFrame(() => { m.classList.add('visible'); });
+        chat.scrollTop = chat.scrollHeight;
+        resolve(m);
+      }
+    }, delay);
+  });
+}
+
+function appendOptions(options, delay) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const wrap = document.createElement('div');
+      wrap.className = 'wa-options';
+      options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'wa-btn';
+        btn.innerHTML = opt.icon ? `${opt.icon} ${opt.label}` : opt.label;
+        btn.onclick = () => {
+          wrap.querySelectorAll('.wa-btn').forEach(b => b.disabled = true);
+          btn.classList.add('selected');
+          resolve(i);
+        };
+        wrap.appendChild(btn);
+      });
+      chat.appendChild(wrap);
+      requestAnimationFrame(() => { wrap.classList.add('visible'); });
+      chat.scrollTop = chat.scrollHeight;
+    }, delay);
+  });
+}
+
+async function runFlow() {
+  // Step 1 – initial greeting
+  await appendMsg(`Hi Alex! 👋 Great choice picking the <b>Supreme Shield PPF</b> for your <b>BMW 5 Series</b>!<br><br>We're thrilled you chose Avery Dennison. We've got your enquiry from <b>Delhi</b> and we're already on it.<br><br><b>Your BMW 5 Series deserves the best protection out there! 🛡️</b><br>Are you ready to get the Supreme Shield PPF done?`, 'in', 600);
+
+  const pick1 = await appendOptions([
+    { label: '1 – Ready to go 🚀' },
+    { label: '2 – Comparing options before deciding' },
+    { label: '3 – Just curious for now' }
+  ], 200);
+
+  if (pick1 === 0) {
+    // Replied "1"
+    await appendMsg('1 – Ready to go 🚀', 'out', 300);
+    await appendMsg(`That's awesome Alex! 🙌<br><br>Since you're in <b>Delhi</b>, we'll connect you with the nearest Avery Dennison certified installer right away.<br><br>Meanwhile, browse through our collection of PPF products here 👉<br><a class="wa-link" href="#">https://graphics.averydennison.com/ap-en/home.html</a><br><br>Our team will reach out to you shortly and take it from there. Speak soon!`, 'in', 400);
+
+  } else if (pick1 === 1) {
+    // Replied "2"
+    await appendMsg('2 – Comparing options before deciding', 'out', 300);
+    await appendMsg(`We'd love to help you make the right choice Alex!<br><br>Our team can share product options and details. Would you like us to send that across?`, 'in', 400);
+
+    const pick2 = await appendOptions([
+      { label: '1 – Yes please ✅' },
+      { label: '2 – Maybe later' }
+    ], 200);
+
+    if (pick2 === 0) {
+      await appendMsg('1 – Yes please ✅', 'out', 300);
+      await appendMsg(`That's awesome Alex! 🙌<br><br>Since you're in <b>Delhi</b>, we'll connect you with the nearest Avery Dennison certified installer right away.<br><br>Meanwhile, browse through our collection of PPF products here 👉<br><a class="wa-link" href="#">https://graphics.averydennison.com/ap-en/home.html</a><br><br>Our team will reach out to you shortly and take it from there. Speak soon!`, 'in', 400);
+    } else {
+      await appendMsg('2 – Maybe later', 'out', 300);
+      // Auto follow-up
+      await appendMsg(`Hey Alex!<br>🛡️ Your BMW 5 Series is still waiting for that upgrade!<br><br>We just wanted to remind you that our team is here to make the process super easy for you. Shall we get started?`, 'in', 1000);
+
+      const pick3 = await appendOptions([
+        { label: '1 – Yes, let\'s do it 🎉' },
+        { label: '2 – Not yet' }
+      ], 200);
+
+      if (pick3 === 0) {
+        await appendMsg("1 – Yes, let's do it 🎉", 'out', 300);
+        await appendMsg(`That's awesome Alex! 🙌<br><br>Since you're in <b>Delhi</b>, we'll connect you with the nearest Avery Dennison certified installer right away.<br><br>Browse our collection 👉<br><a class="wa-link" href="#">https://graphics.averydennison.com/ap-en/home.html</a><br><br>Our team will reach out shortly. Speak soon!`, 'in', 400);
+      } else {
+        await appendMsg('2 – Not yet', 'out', 300);
+        await appendMsg(`No worries Alex!<br><br>Whenever you're ready we're here to help. Feel free to explore our range of products at <a class="wa-link" href="#">https://graphics.averydennison.com/ap-en/home.html</a> and reach out anytime.<br><br>Have a great day! 👋`, 'in', 400);
+      }
+    }
+
+  } else {
+    // Replied "3"
+    await appendMsg('3 – Just curious for now', 'out', 300);
+    await appendMsg(`No worries Alex!<br><br>Whenever you're ready we're here to help. Feel free to explore our range of products at <a class="wa-link" href="#">https://graphics.averydennison.com/ap-en/home.html</a> and reach out anytime.<br><br>Have a great day! 👋`, 'in', 400);
+  }
+}
+
+function restartFlow() {
+  chat.innerHTML = '<div class="date-pill">Today</div>';
+  runFlow();
+}
+
+runFlow();
+</script>
+</body>
+</html>
